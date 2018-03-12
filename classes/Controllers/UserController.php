@@ -38,7 +38,7 @@ class UserController extends Controller
                 ];
             }
         }
-        $this->view->setTemplateName('user/login.php');
+        $this->view->setTemplate('user/login.php');
         $this->view->setData($data);
         return $this->view;
     }

@@ -18,18 +18,19 @@ use Models\Post;
 class PostsController extends Controller
 {
 
-    public function createAction(User $user, Post $post) {
-        if(!$user->loggedin()) {
+    public function createAction(User $user, Post $post)
+    {
+        if (!$user->loggedin()) {
             $this->application->make(Session::class)->addFlash('error', 'Keine Berechtigung, um einen Beitrag anzulegen.');
             $this->redirect(Config::get('app.base_url'));
         }
         $data = [];
-        if($this->request->isPost()) {
+        if ($this->request->isPost()) {
             $postData = $this->request->getAll();
             $validate = $post->validate($postData);
-            if($validate === true) {
+            if ($validate === true) {
                 $postData['user_id'] = $user->getId();
-                if($post->insert($postData)) {
+                if ($post->insert($postData)) {
                     $this->application->make(Session::class)->addFlash('success', 'Beitrag erfolgreich angelegt.');
                     $this->redirect(Config::get('app.base_url') . '/posts');
                 }
@@ -39,17 +40,25 @@ class PostsController extends Controller
             }
         }
 
-        $this->view->setTemplateName('posts/create.php');
+        $this->view->setTemplate('posts/create.php');
         $this->view->setData($data);
         return $this->view;
     }
 
-    public function indexAction() {
-        $this->view->setTemplateName('posts/index.php');
+    public function indexAction(Post $post)
+    {
+        $this->view->setTemplate('posts/index.php', ['posts' => $post->findAll(3, 0)]);
         return $this->view;
     }
 
-    public function showAction() {
+    public function userListAction(Post $post, $userId)
+    {
+        $this->view->setTemplate('posts/index.php', ['posts' => $post->findAllByUser($userId)]);
+        return $this->view;
+    }
+
+    public function showAction()
+    {
 
     }
 

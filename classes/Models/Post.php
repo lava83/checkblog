@@ -71,4 +71,21 @@ class Post
         return $stmt->execute($data);
     }
 
+    public function findAll($limit = 3, $offset = 0, $filter = []) {
+        $sql = 'select p.id post_id, p.title, p.content, p.created, u.id user_id, u.username from posts p inner join users u on(u.id = p.user_id)';
+        if(!empty($filter)) {
+            $sql .= ' where 1=1';
+            foreach($filter as $key => $value) {
+                $sql .= ' and ' . $key . '=:' . $key;
+            }
+        }
+        $stmt = $this->db->prepare($sql . ' order by created desc limit ' .$limit.' offset '.$offset);
+        $stmt->execute($filter);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function findAllByUser($userId, $limit = 3, $offset = 0) {
+        return $this->findAll($limit, $offset, ['user_id' => $userId]);
+    }
+
 }

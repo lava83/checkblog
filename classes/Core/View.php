@@ -28,7 +28,7 @@ class View
     public function __construct($templateName = null, $data = [])
     {
         if (!empty($templateName)) {
-            $this->setTemplateName($templateName);
+            $this->setTemplate($templateName);
         }
         if (!empty($data)) {
             $this->setData($data);
@@ -46,9 +46,14 @@ class View
     /**
      * @param string $templateName
      */
-    public function setTemplateName(string $templateName): void
+    public function setTemplate(string $templateName, $data = []): void
     {
         $this->templateName = $templateName;
+        if(!empty($data)) {
+            foreach($data as $key => $value) {
+                $this->assign($key, $value);
+            }
+        }
     }
 
     /**

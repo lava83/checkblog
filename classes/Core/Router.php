@@ -61,7 +61,7 @@ class Router
                     call_user_func_array($route['function'], $matches);
                 }
                 elseif (is_string($route['function'])) {
-                    static::workWithControllerAndAction($route['function']);
+                    static::workWithControllerAndAction($route['function'], $matches);
                 }
                 elseif (is_array($route['function'])) {
                     if (!isset($route['function']['use'])) {
@@ -76,16 +76,16 @@ class Router
         }
     }
 
-    protected function workWithControllerAndAction($controllerActionPath): void {
+    protected function workWithControllerAndAction($controllerActionPath, $urlParams = []): void {
         list($controller, $action) = explode('@', $controllerActionPath);
         if (class_exists($controller)) {
-            self::triggerControllerAction($controller, $action);
+            self::triggerControllerAction($controller, $action, $urlParams);
         } else {
             throw new RouterException(sprintf('Cant find controller: %s', $controller));
         }
     }
 
-    protected static function triggerControllerAction($controller, $actionWithoutSuffix): void
+    protected static function triggerControllerAction($controller, $actionWithoutSuffix, $urlParams = []): void
     {
         $controllerObject = Application::getInstance()->make($controller);
         $action = $actionWithoutSuffix . 'Action';
@@ -100,6 +100,7 @@ class Router
             }
         }
         $controllerObject->setAction($action);
+        $params = array_merge($params, $urlParams);
         $triggeredAction = $controllerObject->dispatch($action, $params);
         if($triggeredAction instanceof View) {
             $triggeredAction->render();

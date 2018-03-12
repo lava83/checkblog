@@ -15,7 +15,7 @@ class ImpressumController extends Controller
 {
 
     public function indexAction() {
-        $this->view->setTemplateName('impressum/index.php');
+        $this->view->setTemplate('impressum/index.php');
         return $this->view;
     }
 

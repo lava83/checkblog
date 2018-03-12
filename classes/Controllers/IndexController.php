@@ -15,7 +15,7 @@ class IndexController extends Controller
 
     public function indexAction()
     {
-        $this->view->setTemplateName('index/index.php');
+        $this->view->setTemplate('index/index.php');
         return $this->view;
     }
 

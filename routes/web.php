@@ -12,5 +12,6 @@
 \Core\Router::add('logout', \Controllers\UserController::class . '@logout');
 \Core\Router::add('posts/create', \Controllers\PostsController::class . '@create');
 \Core\Router::add('posts', \Controllers\PostsController::class . '@index');
+\Core\Router::add('posts/user/(.*)', \Controllers\PostsController::class . '@userList');
 
 //\Core\Router::add('post/delete/(*.)', \Controllers\UserController::class . '@logout');
