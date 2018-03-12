@@ -8,14 +8,15 @@
 
 namespace Controllers;
 
-use Core\Application;
+use Core\Controller;
 
-class IndexController
+class IndexController extends Controller
 {
 
-    public function indexAction(Application $application, $id = null)
+    public function indexAction()
     {
-        echo 'Hallo Stefan';
+        $this->view->setTemplateName('index/index.php');
+        return $this->view;
     }
 
 }

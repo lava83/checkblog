@@ -9,9 +9,11 @@
 return [
     'default' => [
         'driver' => getenv('DATABASE_DRIVER'),
-        'host' => getenv('DATABASE_DRIVER'),
-        'user' => getenv('DATABASE_DRIVER'),
-        'password' => getenv('DATABASE_DRIVER'),
-        'database' => getenv('DATABASE_DRIVER')
+        'host' => getenv('DATABASE_HOST'),
+        'user' => getenv('DATABASE_USER'),
+        'password' => getenv('DATABASE_PASS'),
+        'database' => getenv('DATABASE_NAME'),
+        'exceptions' => true,
+        'charset' => 'utf8'
     ]
 ];

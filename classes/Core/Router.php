@@ -59,15 +59,16 @@ class Router
                 array_shift($matches);
                 if ($route['function'] instanceof \Closure) {
                     call_user_func_array($route['function'], $matches);
-                } elseif (is_array($route['function'])) {
+                }
+                elseif (is_string($route['function'])) {
+                    static::workWithControllerAndAction($route['function']);
+                }
+                elseif (is_array($route['function'])) {
                     if (!isset($route['function']['use'])) {
                         throw new RouterException('The use index must be set.');
                     }
                     if (is_string($route['function']['use'])) {
-                        list($controller, $action) = explode('@', $route['function']['use']);
-                        if (class_exists($controller)) {
-                            self::workWithController($controller, $action);
-                        }
+                        static::workWithControllerAndAction($route['function']['use']);
                     }
                 }
                 $isRoute = true;
@@ -75,17 +76,33 @@ class Router
         }
     }
 
-    protected static function workWithController($controller, $actionWithoutSuffix): void
+    protected function workWithControllerAndAction($controllerActionPath): void {
+        list($controller, $action) = explode('@', $controllerActionPath);
+        if (class_exists($controller)) {
+            self::triggerControllerAction($controller, $action);
+        } else {
+            throw new RouterException(sprintf('Cant find controller: %s', $controller));
+        }
+    }
+
+    protected static function triggerControllerAction($controller, $actionWithoutSuffix): void
     {
-        $controllerObject = new $controller;
+        $controllerObject = Application::getInstance()->make($controller);
         $action = $actionWithoutSuffix . 'Action';
         $reflectController = new \ReflectionClass($controllerObject);
+        $params = [];
         if ($actionParameters = $reflectController->getMethod($action)->getParameters()) {
             foreach ($actionParameters as $parameter) {
-                if($parameterClassName = $parameter->getClass()->name and class_exists($parameterClassName)) {
-
+                $reflectionParameterClass = $parameter->getClass();
+                if($reflectionParameterClass and $parameterClassName = $reflectionParameterClass->name and class_exists($parameterClassName)) {
+                    $params[$parameter->name] = Application::getInstance()->make($parameterClassName);
                 }
             }
+        }
+        $controllerObject->setAction($action);
+        $triggeredAction = $controllerObject->dispatch($action, $params);
+        if($triggeredAction instanceof View) {
+            $triggeredAction->render();
         }
     }
 }

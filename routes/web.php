@@ -6,7 +6,11 @@
  * Time: 22:57
  */
 
-\Core\Router::add('user/list', function(){
-    echo 'liste';
-});
-\Core\Router::add('user/show/(.*)', ['use' => 'Controllers\\IndexController@index']);
+\Core\Router::add('', \Controllers\IndexController::class . '@index');
+\Core\Router::add('impressum', \Controllers\ImpressumController::class . '@index');
+\Core\Router::add('login', \Controllers\UserController::class . '@login');
+\Core\Router::add('logout', \Controllers\UserController::class . '@logout');
+\Core\Router::add('posts/create', \Controllers\PostsController::class . '@create');
+\Core\Router::add('posts', \Controllers\PostsController::class . '@index');
+
+//\Core\Router::add('post/delete/(*.)', \Controllers\UserController::class . '@logout');

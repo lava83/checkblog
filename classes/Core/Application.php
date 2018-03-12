@@ -89,13 +89,9 @@ class Application
             }
         }
         $this->setEnvironment();
+        $this->initializeSession();
         $this->initializeConfig();
-        Router::init();
-        $webRoutesFilePath = $this->applicationBasePath . DIRECTORY_SEPARATOR . 'routes/web.php';
-        if(file_exists($webRoutesFilePath)) {
-            require_once $webRoutesFilePath;
-        }
-
+        $this->initializeRouter();
     }
 
     /**
@@ -109,6 +105,29 @@ class Application
             $this->init();
         }
         Router::run();
+    }
+
+    public function make($applicationClass) {
+        if(!class_exists($applicationClass)) {
+            throw new ApplicationException(sprintf('The class: %s doesnt exists', $applicationClass));
+        }
+        $reflectApplicationClass = new \ReflectionClass($applicationClass);
+        $params = [];
+        if($reflectApplicationClass->hasMethod('__construct') && $constructParameters = $reflectApplicationClass->getConstructor()->getParameters()) {
+            foreach ($constructParameters as $reflectionParameter) {
+                $reflectionParameterClass = $reflectionParameter->getClass();
+                if($reflectionParameterClass and $parameterClassName = $reflectionParameterClass->name and class_exists($parameterClassName)) {
+                    $params[$reflectionParameter->name] = $this->make($parameterClassName);
+                }
+            }
+        }
+        if($reflectApplicationClass->hasMethod('getInstance') && $reflectApplicationClass->getMethod('getInstance')->isStatic()) {
+            //singleton instance
+            $instance = call_user_func($applicationClass . '::getInstance');
+        } else {
+            $instance = $reflectApplicationClass->newInstanceArgs($params);
+        }
+        return $instance;
     }
 
     /**
@@ -138,5 +157,21 @@ class Application
         } catch (ConfigException $e) {
             throw new \Exception('Cant initialize configuration.');
         }
+    }
+
+    protected function initializeRouter(): void
+    {
+        Router::init();
+        $webRoutesFilePath = $this->applicationBasePath . DIRECTORY_SEPARATOR . 'routes/web.php';
+        if (file_exists($webRoutesFilePath)) {
+            require_once $webRoutesFilePath;
+        }
+    }
+
+    protected function initializeSession(): void
+    {
+        /** @var Session $session */
+        $session = $this->make(Session::class);
+        $session->start();
     }
 }
