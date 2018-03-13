@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: sr
- * Date: 11.03.2018
- * Time: 22:57
- */
 
 \Core\Router::add('', \Controllers\PostsController::class . '@index');
 \Core\Router::add('impressum', \Controllers\ImpressumController::class . '@index');
