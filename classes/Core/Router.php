@@ -71,7 +71,7 @@ class Router
                         static::workWithControllerAndAction($route['function']['use']);
                     }
                 }
-                $isRoute = true;
+                break;
             }
         }
     }

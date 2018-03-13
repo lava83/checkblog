@@ -4,22 +4,14 @@
 
 <?php if(!empty($posts)):?>
     <?php foreach($posts as $post): ?>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <div class="row">
-                    <div class="col-xs-6">
-                        <a href="<?= \Core\Config::get('app.base_url')?>/posts/user/<?= $post['user_id'] ?>"><?= $post['username'] ?></a>
-                    </div>
-                    <div class="col-xs-6">
-                        <a href=""><?= $post['title'] ?></a>
-                    </div>
-                </div>
-            </div>
-            <div class="panel-body">
-                <?= $post['content'] ?>
-            </div>
-        </div>
+        <?php (new \Core\View('posts/partials/post.php', ['post' => $post]))->render() ?>
     <?php endforeach; ?>
+    <?php if(!empty($pagination['beforePage'])):?>
+        <a href="<?= $actUrl ?>?page=<?= $pagination['beforePage']?>" class="btn btn-default">Neuere Einträge</a>
+    <?php endif; ?>
+    <?php if(!empty($pagination['nextPage'])):?>
+        <a href="<?= $actUrl ?>?page=<?= $pagination['nextPage']?>" class="btn btn-default">Ältere Einträge</a>
+    <?php endif; ?>
 <?php endif;?>
 
 <?php

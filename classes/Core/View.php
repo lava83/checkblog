@@ -95,7 +95,7 @@ class View
             if (is_file($templatePath)) {
                 extract(static::$globalData);
                 extract($this->data);
-                require_once $templatePath;
+                require $templatePath;
                 break;
             }
         }
